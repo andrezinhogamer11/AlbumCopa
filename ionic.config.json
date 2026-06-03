@@ -1,0 +1,7 @@
+{
+  "name": "AlbumCopa",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
