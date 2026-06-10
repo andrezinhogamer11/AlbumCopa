@@ -1,2 +1,20 @@
-/* For information on how to create your own theme, please refer to:
-http://ionicframework.com/docs/theming/ */
+:root {
+  /* Cores Principais - Estilo Álbum Clássico */
+  --ion-color-primary: #004d26; /* Verde Escuro Luxo */
+  --ion-color-primary-rgb: 0, 77, 38;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-shade: #004421;
+  --ion-color-primary-tint: #1a5f3c;
+
+  --ion-color-secondary: #d4af37; /* Dourado Metálico */
+  --ion-color-secondary-rgb: 212, 175, 55;
+  --ion-color-secondary-contrast: #000000;
+
+  /* Fundo da página em tom de papel/creme para não ser aquele branco frio */
+  --ion-background-color: #fdfcf0;
+  --ion-item-background: #ffffff;
+  
+  /* Cor das abas e toolbar */
+  --ion-toolbar-background: #004d26;
+  --ion-toolbar-color: #ffffff;
+}

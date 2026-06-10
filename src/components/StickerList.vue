@@ -1,64 +1,41 @@
 <template>
-  <ion-toolbar>
-    <!-- Chamamos a função handleSearch passando o evento -->
-    <ion-searchbar @ionInput="handleSearch($event)" placeholder="Buscar..."></ion-searchbar>
-  </ion-toolbar>
+  <div class="list-container">
+    <ion-toolbar class="search-bar">
+      <ion-searchbar @ionInput="handleSearch($event)" placeholder="Buscar craque..."></ion-searchbar>
+    </ion-toolbar>
 
-  <ion-segment :value="filterStatus" @ionChange="handleFilter($event)">
-    <ion-segment-button value="all">
-      <ion-label>Todas</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="collected">
-      <ion-label>Coletadas</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="pending">
-      <ion-label>Pendentes</ion-label>
-    </ion-segment-button>
-  </ion-segment>
+    <ion-segment :value="filterStatus" @ionChange="handleFilter($event)" mode="md">
+      <ion-segment-button value="all"><ion-label>TODAS</ion-label></ion-segment-button>
+      <ion-segment-button value="collected"><ion-label>COLETADAS</ion-label></ion-segment-button>
+      <ion-segment-button value="pending"><ion-label>FALTANDO</ion-label></ion-segment-button>
+    </ion-segment>
 
-  <ion-grid>
-    <ion-row>
-      <ion-col size="6" v-for="s in filteredStickers" :key="s.id">
-        <StickerCard :sticker="s" @toggle-collected="toggleCollected" />
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+    <ion-grid>
+      <ion-row>
+        <!-- Mudamos para size="4" para caber 3 figurinhas por linha no celular -->
+        <ion-col size="4" size-md="3" size-lg="2" v-for="s in filteredStickers" :key="s.id">
+          <StickerCard :sticker="s" @toggle-collected="toggleCollected" />
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { 
-  IonToolbar, 
-  IonSearchbar, 
-  IonSegment, 
-  IonSegmentButton, 
-  IonLabel, 
-  IonGrid, 
-  IonRow, 
-  IonCol 
-} from '@ionic/vue';
+import { IonToolbar, IonSearchbar, IonSegment, IonSegmentButton, IonLabel, IonGrid, IonRow, IonCol } from '@ionic/vue';
 import StickerCard from './StickerCard.vue';
 import { useAlbum } from '@/composables/useAlbum';
 
 const { filterStatus, filteredStickers, toggleCollected, setSearchTerm, setFilterStatus } = useAlbum();
 
-// Função para tratar a busca sem erro de tipagem
-const handleSearch = (ev: any) => {
-  const value = ev.detail.value;
-  setSearchTerm(value || '');
-};
-
-// Função para tratar o filtro sem erro de tipagem
-const handleFilter = (ev: any) => {
-  const value = ev.detail.value;
-  setFilterStatus(value);
-};
+const handleSearch = (ev: any) => setSearchTerm(ev.detail.value || '');
+const handleFilter = (ev: any) => setFilterStatus(ev.detail.value);
 </script>
 
 <style scoped>
-ion-searchbar {
-  --background: var(--ion-color-light);
-}
-ion-segment {
-  margin: 10px 0;
-}
+.list-container { background: var(--ion-background-color); }
+ion-segment { --background: transparent; margin: 10px 0; }
+ion-segment-button { --color-checked: var(--ion-color-primary); font-weight: bold; }
+ion-grid { padding: 5px; }
+ion-col { padding: 2px; }
 </style>

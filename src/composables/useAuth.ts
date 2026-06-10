@@ -1,45 +1,51 @@
 import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { users } from '@/data/stickers';
 
 interface User {
-  email: string;
   name: string;
+  email: string;
+  password: string;
 }
 
+// IMPORTANTE: Estas variáveis ficam fora da função para serem compartilhadas por todas as telas
+const registeredUsers = ref<User[]>([
+  { name: 'Admin', email: 'admin@teste.com', password: '123' }
+]);
 const currentUser = ref<User | null>(null);
-const isAuthenticated = computed(() => currentUser.value !== null);
 
 export function useAuth() {
-  const router = useRouter();
+  const isAuthenticated = computed(() => currentUser.value !== null);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    const userFound = users.find(u => u.email === email && u.password === password);
-    if (userFound) {
-      currentUser.value = { email: userFound.email, name: userFound.name };
-      return true;
-    }
-    return false;
+  const login = async (email: string, pass: string) => {
+    return new Promise<boolean>((resolve) => {
+      setTimeout(() => {
+        const user = registeredUsers.value.find(
+          u => u.email.toLowerCase() === email.toLowerCase() && u.password === pass
+        );
+        if (user) {
+          currentUser.value = user;
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      }, 400);
+    });
   };
 
-  const logout = () => {
-    currentUser.value = null;
-    router.replace('/login');
+  const register = async (name: string, email: string, pass: string) => {
+    return new Promise<{ success: boolean; message: string }>((resolve) => {
+      setTimeout(() => {
+        const exists = registeredUsers.value.some(u => u.email.toLowerCase() === email.toLowerCase());
+        if (exists) {
+          resolve({ success: false, message: 'Este e-mail já está cadastrado.' });
+        } else {
+          registeredUsers.value.push({ name, email, password: pass });
+          resolve({ success: true, message: 'Conta criada!' });
+        }
+      }, 400);
+    });
   };
 
-  const cadastrar = async (name: string, email: string, password: string): Promise<boolean> => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    if (users.some(u => u.email === email)) return false;
-    if (password.length < 6 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) return false;
-    users.push({ email, password, name });
-    return true;
-  };
+  const logout = () => { currentUser.value = null; };
 
-  const resetarSenha = async (email: string): Promise<boolean> => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return users.some(u => u.email === email);
-  };
-
-  return { currentUser, isAuthenticated, login, logout, cadastrar, resetarSenha };
+  return { currentUser, isAuthenticated, login, register, logout };
 }
