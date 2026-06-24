@@ -4,6 +4,12 @@
   </ion-app>
 </template>
 
-<script setup>
-import { IonApp, IonRouterOutlet } from '@ionic/vue'
+<script setup langs="ts">
+import { onMounted } from 'vue'
+import { initDatabase } from './services/database'
+import { IonApp, IonRouterOutlet } from '@ionic/vue';
+
+onMounted(async () => {
+  await initDatabase()
+})
 </script>
