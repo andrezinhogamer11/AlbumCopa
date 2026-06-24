@@ -19,7 +19,7 @@
     <ion-input type="tel" v-model="form.telefone" />
  </ion-item>
 
-<ion-item expand="block" type="button" @click="salvarContato">Salvar</ion-item>
+<ion-button expand="block" type="button" @click="salvarContato">Salvar</ion-button>
 
 <ion-toast :is-open="toast.show" :message="toast.message" duration="2000" @ionDismiss="toast.show = false" />
 </ion-list>
