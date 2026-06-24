@@ -89,3 +89,8 @@ Você também pode criar novas contas através da tela de cadastro.
 ## Referências
 
 [1] exercicio_album_copa.pdf (PDF fornecido para a atividade prática)
+
+## Instalar no projeto Ionic Vue
+npm intall @capacitor-community/sqlite
+npx cap sync
+

@@ -11,6 +11,13 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
 import ResetPasswordForm from "../components/ResetPasswordForm.vue";
 import { useAuth } from '@/composables/useAuth';
-const { resetarSenha } = useAuth();
-const handleReset = async (e: string) => { await resetarSenha(e); alert('E-mail enviado!'); };
+const auth = useAuth() as { resetarSenha?: (email: string) => Promise<void> };
+const handleReset = async (e: string) => {
+  if (!auth.resetarSenha) {
+    alert('Funcionalidade de recuperação de senha indisponível');
+    return;
+  }
+  await auth.resetarSenha(e);
+  alert('E-mail enviado!');
+};
 </script>

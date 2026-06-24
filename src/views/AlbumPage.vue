@@ -48,7 +48,7 @@ const isMuted = ref(false);
 const toggleMusic = () => {
   if (audio.paused) {
     audio.play();
-    isMuted.ref = false;
+    isMuted.value = false;
   } else {
     audio.pause();
     isMuted.value = true;
@@ -58,7 +58,7 @@ const toggleMusic = () => {
 onMounted(() => {
   // Tenta tocar assim que entra na página
   // O navegador permite pois o usuário já interagiu com o Login
-  audio.play().catch(err => {
+  audio.play().catch(() => {
     console.log("Autoplay bloqueado. O usuário precisa clicar em algo primeiro.");
     isMuted.value = true;
   });
