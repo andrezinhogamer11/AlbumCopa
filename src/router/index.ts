@@ -51,6 +51,8 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/ProfilePage.vue'),
         meta: { requiresAuth: true }
       }
+
+      
     ]
   }
 ];

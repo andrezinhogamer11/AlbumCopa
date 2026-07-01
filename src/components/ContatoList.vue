@@ -1,10 +1,50 @@
 <template>
+ <ion-list>
+    <template v-if="contatos.length">
+        <ion-item-sliding v-for="contato in contatos" :key="contato.id">
+            <ion-item>
+                <ion-label>
+                    <h2>{{ contato.nome }}</h2>
+                    <p>{{ contato.email }}</p>
+                    <p>{{ contato.telefone }}</p>
+                </ion-label>
+            </ion-item>
 
+            <ion-item-options side="end">
+                <ion-item-option color="primary" @click="editarContato(contato)">Editar</ion-item-option>
+                <ion-item-option color="danger" @click="confrimarExcliusao(contato)">Excluir</ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
+    </template>
+    <ion-item v-else>
+        <ion-label>Nenhum contato encontrado</ion-label>
+    </ion-item>
+ </ion-list>
+
+    <ion-alert :is-open="editAlert.open"
+        header="Editar contato"
+        :message="editAlert.error"
+        :inputs="editInputs"
+        :buttons="[
+        { text: 'Cancelar', role: 'cancel', handler: closeEditAlert },
+        { text: 'Salver', handler: salvarEdicao }
+        ]" >
+    </ion-alert>
+
+    <ion-alert 
+    :is-open="deleteAlert.open"
+    header="Excluir contato"
+    message="Tem certeza que deseja excluir este contato?"
+    :buttons="[
+        { text: 'Cancelar', role: 'cancel', handler: closeDeleteAlert },
+        { text: 'Excluir', role: 'destructive', handler: excluirContato }
+    ]"
+    />
     </template>
 
     <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
-import { IonAlert, IonItem, IonItemOptions, IonItemOption, IoItemSliding, IonLabel, IonList } from '@ionic/vue'
+import { IonAlert, IonItem, IonItemOptions, IonItemOption, IonItemSliding, IonLabel, IonList } from '@ionic/vue'
 import { listContatos, updateContato, deleteContatoById } from '@/services/database'
 
 const contatos = ref<any[]>([])
@@ -58,7 +98,7 @@ if (!editAlert.value.data.id) {
 
 const nome = values?.nome ?? editAlert.value.data.nome
 const email = values?.email ?? editAlert.value.data.email
-const telefone = values?.telefone ?? editAlert>values.data.telefone
+const telefone = values?.telefone ?? editAlert.value.data.telefone
 
 
 if (!nome || !email) {
@@ -67,7 +107,7 @@ return false
 }
 
 editAlert.value.error = ''
-await updateContato(editAlert.value.data.id, nome, email, telefone)
+await updateContato(editAlert.value.data.telefone, nome, email, telefone)
 closeEditAlert()
 load()
 return true
