@@ -1,23 +1,22 @@
 <template>
-    <ion-page>
-        <ion-header>
-            <ion-toolbar>
-                <ion-title>Cadastrar Contato</ion-title>
-            </ion-toolbar>
-        </ion-header>
-        <ion-content :fullscreen="true">
-            <ion-header collapse="condense">
-            <ion-toolbar>
-                <ion-title size="large">Cadastrar Contato</ion-title>
-            </ion-toolbar>
-            </ion-header>
-            <ContatoList />
-        </ion-content>
-    </ion-page>
-    </template>
-
-    <script setup lang="ts">
-    import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent }
-    from '@ionic/vue';
-    import ContatoList from '@/components/ContatoForm.vue';
+    <IonPage>
+        <IonHeader>
+            <IonToolbar>
+                <IonTitle>Tab 1</IonTitle>
+            </IonToolbar>
+        </IonHeader>
+        <IonContent :fullscreen="true">
+            <IonHeader collapse="condense">
+                <IonToolbar>
+                    <IonTitle size="large">Tab 1</IonTitle>
+                </IonToolbar>
+            </IonHeader>
+            <ContatoForm/>
+        </IonContent>
+    </IonPage>
+</template>
+ 
+<script setup lang="ts">
+import ContatoForm from '@/components/ContatoForm.vue';
+import { IonContent, IonHeader, IonPage, IonTitle } from '@ionic/vue';
 </script>

@@ -50,9 +50,17 @@ const routes: Array<RouteRecordRaw> = [
         path: 'profile',
         component: () => import('@/views/ProfilePage.vue'),
         meta: { requiresAuth: true }
+      },
+      {
+        path: 'tab1',
+        component: () => import('@/views/Tab1Page.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'tab2',
+        component: () => import('@/views/Tab2Page.vue'),
+        meta: { requiresAuth: true }
       }
-
-      
     ]
   }
 ];
