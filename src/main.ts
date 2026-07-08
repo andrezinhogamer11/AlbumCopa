@@ -1,4 +1,6 @@
 import { createApp } from 'vue'
+import { Capacitor } from '@capacitor/core'
+import { defineCustomElements as defineJeepSqlite } from 'jeep-sqlite/loader'
 import App from './App.vue'
 import router from './router'
 import { IonicVue } from '@ionic/vue'
@@ -13,6 +15,10 @@ import '@ionic/vue/css/text-alignment.css'
 import '@ionic/vue/css/text-transformation.css'
 import '@ionic/vue/css/flex-utils.css'
 import '@ionic/vue/css/display.css'
+
+if (Capacitor.getPlatform() === 'web') {
+  defineJeepSqlite(window)
+}
 
 const app = createApp(App).use(IonicVue).use(router)
 router.isReady().then(() => app.mount('#app'))
