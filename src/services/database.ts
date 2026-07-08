@@ -40,7 +40,9 @@ async function ensureWebStore() {
   }
 
   if (!document.querySelector('jeep-sqlite')) {
-    document.body.appendChild(document.createElement('jeep-sqlite'))
+    const jeepSqlite = document.createElement('jeep-sqlite')
+    jeepSqlite.style.display = 'none'
+    document.body.appendChild(jeepSqlite)
   }
 
   await customElements.whenDefined('jeep-sqlite')

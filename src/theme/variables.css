@@ -18,3 +18,7 @@
   --ion-toolbar-background: #004d26;
   --ion-toolbar-color: #ffffff;
 }
+
+jeep-sqlite {
+  display: none !important;
+}
