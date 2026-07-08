@@ -4,7 +4,7 @@
   </ion-app>
 </template>
 
-<script setup langs="ts">
+<script setup lang="ts">
 import { onMounted } from 'vue'
 import { initDatabase } from './services/database'
 import { IonApp, IonRouterOutlet } from '@ionic/vue';

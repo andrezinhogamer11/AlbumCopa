@@ -42,6 +42,11 @@ const routes: Array<RouteRecordRaw> = [
         meta: { requiresAuth: true }
       },
       {
+        path: 'achievements',
+        component: () => import('@/views/AchievementsPage.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
         path: 'about',
         component: () => import('@/views/AboutPage.vue'),
         meta: { requiresAuth: true }

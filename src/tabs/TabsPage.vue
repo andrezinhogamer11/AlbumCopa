@@ -13,6 +13,11 @@
           <ion-label>Coleção</ion-label>
         </ion-tab-button>
 
+        <ion-tab-button tab="achievements" href="/tabs/achievements">
+          <ion-icon :icon="trophyOutline"></ion-icon>
+          <ion-label>Conquistas</ion-label>
+        </ion-tab-button>
+
         <ion-tab-button tab="about" href="/tabs/about">
           <ion-icon :icon="informationCircleOutline"></ion-icon>
           <ion-label>Sobre</ion-label>
@@ -37,5 +42,5 @@
 
 <script setup lang="ts">
 import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
-import { albumsOutline, gridOutline, personCircleOutline, informationCircleOutline } from 'ionicons/icons';
+import { albumsOutline, gridOutline, personCircleOutline, informationCircleOutline, trophyOutline } from 'ionicons/icons';
 </script>

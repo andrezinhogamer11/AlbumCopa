@@ -1,5 +1,4 @@
 import { createApp } from 'vue'
-// @ts-expect-error: Vue SFC declaration file not found in this project setup
 import App from './App.vue'
 import router from './router'
 import { IonicVue } from '@ionic/vue'
