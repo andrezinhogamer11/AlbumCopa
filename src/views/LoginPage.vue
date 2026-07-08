@@ -48,13 +48,35 @@ const { login } = useAuth( );
 const router = useIonRouter();
 
 const handleLogin = async (email: string, pass: string) => {
-  const success = await login(email, pass);
-  if (success) {
-    router.replace("/tabs/album");
-  } else {
+  if (!email || !pass) {
     const alert = await alertController.create({
-      header: 'Acesso Negado',
-      message: 'E-mail ou senha incorretos.',
+      header: 'Campos obrigatorios',
+      message: 'Informe e-mail e senha para entrar.',
+      buttons: ['OK'],
+      mode: 'ios'
+    });
+    await alert.present();
+    return;
+  }
+
+  try {
+    const success = await login(email, pass);
+    if (success) {
+      router.replace("/tabs/album");
+    } else {
+      const alert = await alertController.create({
+        header: 'Acesso Negado',
+        message: 'E-mail ou senha incorretos.',
+        buttons: ['OK'],
+        mode: 'ios'
+      });
+      await alert.present();
+    }
+  } catch (error) {
+    console.error('Erro no login', error);
+    const alert = await alertController.create({
+      header: 'Erro no login',
+      message: 'Nao foi possivel acessar agora. Tente novamente.',
       buttons: ['OK'],
       mode: 'ios'
     });

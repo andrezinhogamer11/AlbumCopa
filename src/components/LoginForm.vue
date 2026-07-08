@@ -6,7 +6,8 @@
           label="E-mail" 
           label-placement="floating" 
           type="email" 
-          v-model="email" 
+          v-model="email"
+          @ionInput="email = String($event.detail.value || '')" 
           placeholder="exemplo@email.com"
         ></ion-input>
       </ion-item>
@@ -16,7 +17,8 @@
           label="Senha" 
           label-placement="floating" 
           type="password" 
-          v-model="password" 
+          v-model="password"
+          @ionInput="password = String($event.detail.value || '')" 
           placeholder="••••••••"
         ></ion-input>
       </ion-item>
@@ -26,7 +28,7 @@
       </div>
 
       <!-- BOTÃO ATUALIZADO COM A COR PRIMÁRIA (VERMELHA) -->
-      <ion-button expand="block" class="login-button" @click="onLogin">
+      <ion-button expand="block" class="login-button" type="button" @click="onLogin">
         Entrar no Álbum
       </ion-button>
 
@@ -46,9 +48,7 @@ const password = ref('');
 const emit = defineEmits(['login-submitted']);
 
 const onLogin = () => {
-  if (email.value && password.value) {
-    emit('login-submitted', email.value, password.value);
-  }
+  emit('login-submitted', email.value.trim(), password.value);
 };
 </script>
 
