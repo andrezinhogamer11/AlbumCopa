@@ -22,14 +22,23 @@
 </template>
 
 <script setup lang="ts">
-import { IonToolbar, IonSearchbar, IonSegment, IonSegmentButton, IonLabel, IonGrid, IonRow, IonCol } from '@ionic/vue';
+import { IonToolbar, IonSearchbar, IonSegment, IonSegmentButton, IonLabel, IonGrid, IonRow, IonCol, onIonViewWillEnter } from '@ionic/vue';
+import { onMounted } from 'vue';
 import StickerCard from './StickerCard.vue';
 import { useAlbum } from '@/composables/useAlbum';
 
-const { filterStatus, filteredStickers, toggleCollected, setSearchTerm, setFilterStatus } = useAlbum();
+const { filterStatus, filteredStickers, loadAlbum, toggleCollected, setSearchTerm, setFilterStatus } = useAlbum();
 
 const handleSearch = (ev: any) => setSearchTerm(ev.detail.value || '');
 const handleFilter = (ev: any) => setFilterStatus(ev.detail.value);
+
+onIonViewWillEnter(() => {
+  loadAlbum();
+});
+
+onMounted(() => {
+  loadAlbum();
+});
 </script>
 
 <style scoped>

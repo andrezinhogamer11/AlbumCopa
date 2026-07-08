@@ -6,9 +6,11 @@
         <div class="image-box">
           <ion-img :src="sticker.image" class="player-photo"></ion-img>
           <div class="team-tag">{{ sticker.team }}</div>
+          <div class="rarity-tag" :class="rarityClass">{{ sticker.rarity }}</div>
         </div>
         <div class="info-box">
-          <span class="player-name">{{ sticker.name }}</span>
+          <span class="player-name">{{ sticker.name || `Figurinha #${sticker.id}` }}</span>
+          <ion-icon v-if="sticker.isShiny" :icon="sparkles" class="shiny-icon"></ion-icon>
         </div>
       </div>
     </div>
@@ -21,10 +23,15 @@
 
 <script setup lang="ts">
 import { IonImg, IonIcon } from '@ionic/vue';
-import { checkmarkCircle } from 'ionicons/icons';
+import { computed } from 'vue';
+import { checkmarkCircle, sparkles } from 'ionicons/icons';
 const props = defineProps<{ sticker: any }>();
 const emit = defineEmits(['toggle-collected']);
 const onToggle = () => emit('toggle-collected', props.sticker.id);
+const rarityClass = computed(() => ({
+  rare: props.sticker.rarity === 'Rara',
+  shiny: props.sticker.isShiny,
+}));
 </script>
 
 <style scoped>
@@ -79,6 +86,30 @@ const onToggle = () => emit('toggle-collected', props.sticker.id);
   font-weight: bold;
 }
 
+.rarity-tag {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  max-width: calc(100% - 10px);
+  background: rgba(255, 255, 255, 0.92);
+  color: #222;
+  font-size: 0.55rem;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.rarity-tag.rare {
+  background: #222;
+  color: #fff;
+}
+
+.rarity-tag.shiny {
+  background: #ffd84d;
+  color: #111;
+}
+
 .info-box {
   flex: 1;
   display: flex;
@@ -87,6 +118,7 @@ const onToggle = () => emit('toggle-collected', props.sticker.id);
   background: #fff;
   padding: 4px;
   text-align: center;
+  gap: 4px;
 }
 
 .player-name {
@@ -95,6 +127,12 @@ const onToggle = () => emit('toggle-collected', props.sticker.id);
   color: #333;
   line-height: 1;
   text-transform: uppercase;
+}
+
+.shiny-icon {
+  flex: 0 0 auto;
+  color: #f2b705;
+  font-size: 0.85rem;
 }
 
 /* Efeito de figurinha faltando */

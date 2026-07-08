@@ -1,0 +1,42 @@
+CREATE TABLE IF NOT EXISTS contatos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nome TEXT NOT NULL,
+  email TEXT NOT NULL,
+  telefone TEXT
+);
+
+CREATE TABLE IF NOT EXISTS usuario (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nome TEXT NOT NULL,
+  email TEXT NOT NULL,
+  senha TEXT NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_usuario_email ON usuario(email);
+
+CREATE TABLE IF NOT EXISTS stickers (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  team TEXT NOT NULL,
+  image TEXT NOT NULL,
+  rarity TEXT NOT NULL,
+  is_shiny INTEGER NOT NULL DEFAULT 0,
+  collected INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS achievements (
+  id INTEGER PRIMARY KEY,
+  nome TEXT NOT NULL,
+  descricao TEXT NOT NULL,
+  icone TEXT NOT NULL,
+  desbloqueada INTEGER NOT NULL DEFAULT 0,
+  data_desbloqueio TEXT
+);
+
+CREATE TABLE IF NOT EXISTS user_achievements (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL DEFAULT 1,
+  achievement_id INTEGER NOT NULL,
+  data_desbloqueio TEXT NOT NULL,
+  UNIQUE(user_id, achievement_id)
+);

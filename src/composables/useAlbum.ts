@@ -1,21 +1,48 @@
 import { ref, computed } from 'vue';
 import { stickers as allStickersData, Sticker } from '@/data/stickers';
+import { listStickers, updateStickerCollected } from '@/services/database';
+import { useAuth } from '@/composables/useAuth';
 
 const allStickers = ref<Sticker[]>(allStickersData);
 const collectedStickerIds = ref<Set<number>>(new Set());
 const searchTerm = ref<string>('');
 const filterStatus = ref<'all' | 'collected' | 'pending'>('all');
+const isLoadingAlbum = ref(false);
+
+const normalizeSticker = (sticker: any): Sticker => ({
+  id: sticker.id,
+  name: sticker.name || '',
+  team: sticker.team,
+  image: sticker.image,
+  collected: Boolean(sticker.collected),
+  rarity: sticker.rarity || 'Comum',
+  isShiny: Boolean(sticker.is_shiny ?? sticker.isShiny),
+});
 
 export function useAlbum() {
-  const toggleCollected = (stickerId: number) => {
-    if (collectedStickerIds.value.has(stickerId)) {
-      collectedStickerIds.value.delete(stickerId);
-    } else {
-      collectedStickerIds.value.add(stickerId);
-    }
+  const { currentUser } = useAuth();
+
+  const loadAlbum = async () => {
+    isLoadingAlbum.value = true;
+    const stickersFromDb = await listStickers();
+    allStickers.value = stickersFromDb.map(normalizeSticker);
+    collectedStickerIds.value = new Set(allStickers.value.filter(s => s.collected).map(s => s.id));
+    isLoadingAlbum.value = false;
+  };
+
+  const toggleCollected = async (stickerId: number) => {
+    const nextCollected = !collectedStickerIds.value.has(stickerId);
+    await updateStickerCollected(stickerId, nextCollected, currentUser.value?.id || 1);
+
     const stickerIndex = allStickers.value.findIndex(s => s.id === stickerId);
     if (stickerIndex !== -1) {
-      allStickers.value[stickerIndex].collected = collectedStickerIds.value.has(stickerId);
+      allStickers.value[stickerIndex].collected = nextCollected;
+    }
+
+    if (nextCollected) {
+      collectedStickerIds.value.add(stickerId);
+    } else {
+      collectedStickerIds.value.delete(stickerId);
     }
   };
 
@@ -41,5 +68,5 @@ export function useAlbum() {
     return { totalFigurinhas: total, figurinhasColetadas: collected, percentage: total > 0 ? (collected / total) * 100 : 0 };
   });
 
-  return { allStickers, searchTerm, filterStatus, toggleCollected, setSearchTerm, setFilterStatus, filteredStickers, albumSummary };
+  return { allStickers, searchTerm, filterStatus, isLoadingAlbum, loadAlbum, toggleCollected, setSearchTerm, setFilterStatus, filteredStickers, albumSummary };
 }

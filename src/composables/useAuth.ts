@@ -1,51 +1,49 @@
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
+import { addUsuario, findUsuarioByEmail, realizarLogin } from '@/services/database';
 
 interface User {
+  id: number;
   name: string;
   email: string;
   password: string;
 }
 
-// IMPORTANTE: Estas variáveis ficam fora da função para serem compartilhadas por todas as telas
-const registeredUsers = ref<User[]>([
-  { name: 'Admin', email: 'admin@teste.com', password: '123' }
-]);
 const currentUser = ref<User | null>(null);
 
 export function useAuth() {
   const isAuthenticated = computed(() => currentUser.value !== null);
 
   const login = async (email: string, pass: string) => {
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        const user = registeredUsers.value.find(
-          u => u.email.toLowerCase() === email.toLowerCase() && u.password === pass
-        );
-        if (user) {
-          currentUser.value = user;
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      }, 400);
-    });
+    const users = await realizarLogin(email, pass);
+    const user = users[0];
+
+    if (!user) {
+      return false;
+    }
+
+    currentUser.value = {
+      id: user.id,
+      name: user.nome,
+      email: user.email,
+      password: user.senha,
+    };
+
+    return true;
   };
 
   const register = async (name: string, email: string, pass: string) => {
-    return new Promise<{ success: boolean; message: string }>((resolve) => {
-      setTimeout(() => {
-        const exists = registeredUsers.value.some(u => u.email.toLowerCase() === email.toLowerCase());
-        if (exists) {
-          resolve({ success: false, message: 'Este e-mail já está cadastrado.' });
-        } else {
-          registeredUsers.value.push({ name, email, password: pass });
-          resolve({ success: true, message: 'Conta criada!' });
-        }
-      }, 400);
-    });
+    const exists = await findUsuarioByEmail(email);
+    if (exists.length > 0) {
+      return { success: false, message: 'Este e-mail ja esta cadastrado.' };
+    }
+
+    await addUsuario(name, email, pass);
+    return { success: true, message: 'Conta criada!' };
   };
 
-  const logout = () => { currentUser.value = null; };
+  const logout = () => {
+    currentUser.value = null;
+  };
 
   return { currentUser, isAuthenticated, login, register, logout };
 }
