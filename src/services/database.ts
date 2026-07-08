@@ -30,7 +30,7 @@ const achievementsSeed = [
 ]
  
 async function ensureDatabase() {
-  if (!initialized && db) {
+  if (initialized && db) {
     return
 }
 
@@ -59,6 +59,10 @@ db = await sqliteConnection.createConnection(dbName, false, 'no-encryption', 1, 
     await db.run(
       `INSERT OR IGNORE INTO usuario (id, nome, email, senha) VALUES (1, ?, ?, ?);`,
       ['Admin', 'admin@teste.com', '123'],
+    )
+    await db.run(
+      `INSERT OR IGNORE INTO usuario (nome, email, senha) VALUES (?, ?, ?);`,
+      ['Usuario Teste', 'andre@gmail.com', 'andre123'],
     )
 
     await db.execute(`CREATE TABLE IF NOT EXISTS stickers (
