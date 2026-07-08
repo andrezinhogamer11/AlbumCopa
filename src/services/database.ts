@@ -79,6 +79,10 @@ async function seedDatabase(database: SQLiteDBConnection) {
   )
   await database.run(
     `INSERT OR IGNORE INTO usuario (nome, email, senha) VALUES (?, ?, ?);`,
+    ['Usuario Teste', 'test@example.com', 'Password123!'],
+  )
+  await database.run(
+    `INSERT OR IGNORE INTO usuario (nome, email, senha) VALUES (?, ?, ?);`,
     ['Usuario Teste', 'andre@gmail.com', 'andre123'],
   )
 
@@ -87,6 +91,16 @@ async function seedDatabase(database: SQLiteDBConnection) {
       `INSERT OR IGNORE INTO stickers (id, name, team, image, rarity, is_shiny, collected)
        VALUES (?, ?, ?, ?, ?, ?, ?);`,
       [sticker.id, sticker.name, sticker.team, sticker.image, sticker.rarity || 'Comum', sticker.isShiny ? 1 : 0, sticker.collected ? 1 : 0],
+    )
+    await database.run(
+      `UPDATE stickers
+       SET name = ?,
+           team = ?,
+           image = ?,
+           rarity = ?,
+           is_shiny = ?
+       WHERE id = ?;`,
+      [sticker.name, sticker.team, sticker.image, sticker.rarity || 'Comum', sticker.isShiny ? 1 : 0, sticker.id],
     )
   }
 

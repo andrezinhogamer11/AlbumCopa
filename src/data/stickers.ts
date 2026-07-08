@@ -29,6 +29,11 @@ export const stickers: Sticker[] = [
   { id: 18, name: '', team: 'BAKER', image: 'https://i.pinimg.com/736x/87/96/94/879694700866fa322441821924b59e65.jpg', collected: false, rarity: 'Comum', isShiny: true },
   { id: 19, name: '', team: 'BAKER', image: 'https://i.pinimg.com/736x/77/b7/f0/77b7f0c8f193bd2ee1b725bdc0bf079c.jpg', collected: false, rarity: 'Comum', isShiny: false },
   { id: 20, name: '', team: 'Blind', image: 'https://i.pinimg.com/736x/81/0d/b5/810db5f8629f186e1dea7693075ec928.jpg', collected: false, rarity: 'Rara', isShiny: false },
+
+
+
+
+
 ];
 
 export const users = [
