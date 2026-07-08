@@ -1,58 +1,62 @@
 <template>
- <ion-list>
-    <ion-iten>
-        <ion-label>Cadastro de Contato</ion-label>
-    </ion-iten>
+ <IonList>
+    <IonItem>
+        <IonLabel>Cadastro de Contato</IonLabel>
+    </IonItem>
 
-    <ion-item>
-        <ion-label position="stacked">Nome</ion-label>
-        <ion-input v-model="form.nome" required />
-    </ion-item>
-    <ion-note color="danger" v-if="errors.nome">{{ errors.nome }}</ion-note>
- <ion-item>
-    <ion-label position="stacked">Email</ion-label>
-    <ion-input type="email" v-if="errors.email">{{ errors.email }}</ion-input>
- </ion-item>
+    <IonItem>
+        <IonLabel position="stacked">Nome</IonLabel>
+        <IonInput v-model="form.nome" required/>
+    </IonItem>
+    <IonNote color="danger" v-if="errors.nome">{{ errors.nome }}</IonNote>
 
- <ion-item>
-    <ion-label position="stacked">Telefone</ion-label>
-    <ion-input type="tel" v-model="form.telefone" />
- </ion-item>
+    <IonItem>
+        <IonLabel position="stacked">Email</IonLabel>
+        <IonInput v-model="form.email" required/>
+    </IonItem>
+    <IonNote color="danger" v-if="errors.email">{{ errors.email }}</IonNote>
 
-<ion-button expand="block" type="button" @click="salvarContato">Salvar</ion-button>
+    <IonItem>
+        <IonLabel position="stacked">Telefone</IonLabel>
+        <IonInput type="tel" v-model="form.telefone"/>
+    </IonItem>
 
-<ion-toast :is-open="toast.show" :message="toast.message" duration="2000" @ionDismiss="toast.show = false" />
-</ion-list>
+    <IonButton expand="block" type="button" @click="salvarContato">Salvar</IonButton>
+
+    <IonToast :is-open="toast.show" :message="toast.message" duration="2000" @ionDismiss="toast.show = false" />
+
+ </IonList>
 </template>
 
 <script setup lang="ts">
-import { IonList, IonItem, IonLabel, IonInput, IonButton, IonToast } from '@ionic/vue';
-import { reactive} from 'vue'; 
+import { IonList, IonItem, IonLabel, IonInput, IonButton, IonToast, IonNote} from '@ionic/vue'
+import { reactive } from 'vue';
 import { addContato } from '@/services/database';
 
-const form = reactive({ nome: '', email: '', telefone: '' });
-const toast = reactive({ message: '', show: false });
-const errors = reactive({ nome: '', email: '', telefone: '' });
+const form = reactive({ nome: '', email: '', telefone: ''})
+const toast = reactive({ show: false, message: ''})
+const errors = reactive({ nome: '', email: ''})
 
 function clearErrors() {
-    errors.nome = '';
-    errors.email = '';
-  }
+    errors.nome = ''
+    errors.email = ''
+}
 
 async function salvarContato() {
-   clearErrors()
+    clearErrors()
 
- if (!form.nome || !form.email) {
-    if (!form.nome) {
-        errors.nome = 'Nome é obrigatório.'
+    if (!form.nome || !form.email) {
+        if(!form.nome) {
+            errors.nome = 'Nome é obrigatório.'
+        }
+        if(!form.email) {
+            errors.email = 'Email é obrigatório.'
+        }
+        toast.show = true
+        toast.message = 'Preencha os campos obrigatórios.'
+        return
     }
-    if (!form.email) {
-        errors.email = 'Email é obrigatório.'
-    }
-    toast.show = true
-    toast.message = 'Preencha os campos Obrigatórios.'
-    return
- }
+
     await addContato(form.nome, form.email, form.telefone)
 
     form.nome = ''
@@ -62,4 +66,6 @@ async function salvarContato() {
     toast.message = 'Contato salvo com sucesso.'
     window.dispatchEvent(new CustomEvent('contato-salvo'))
 }
+
+
 </script>

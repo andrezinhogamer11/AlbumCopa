@@ -1,134 +1,134 @@
 <template>
- <ion-list>
-    <template v-if="contatos.length">
-        <ion-item-sliding v-for="contato in contatos" :key="contato.id">
-            <ion-item>
-                <ion-label>
-                    <h2>{{ contato.nome }}</h2>
-                    <p>{{ contato.email }}</p>
-                    <p>{{ contato.telefone }}</p>
-                </ion-label>
-            </ion-item>
+  <IonList>
+    <!-- Verifica se existem contatos -->
+    <template v-if="contatos.length > 0">
+      <IonItemSliding v-for="contato in contatos" :key="contato.id">
+        <IonItem>
+          <IonLabel>
+            <h2>{{ contato.nome }}</h2>
+            <p>{{ contato.email }}</p>
+            <p>{{ contato.telefone }}</p>
+          </IonLabel>
+        </IonItem>
 
-            <ion-item-options side="end">
-                <ion-item-option color="primary" @click="editarContato(contato)">Editar</ion-item-option>
-                <ion-item-option color="danger" @click="confrimarExcliusao(contato)">Excluir</ion-item-option>
-            </ion-item-options>
-        </ion-item-sliding>
+        <IonItemOptions side="end">
+          <IonItemOption color="primary" @click="abrirEdicao(contato, $event)">Editar</IonItemOption>
+          <IonItemOption color="danger" @click="confirmarExclusao(contato, $event)">Excluir</IonItemOption>
+        </IonItemOptions>
+      </IonItemSliding>
     </template>
-    <ion-item v-else>
-        <ion-label>Nenhum contato encontrado</ion-label>
-    </ion-item>
- </ion-list>
 
-    <ion-alert :is-open="editAlert.open"
-        header="Editar contato"
-        :message="editAlert.error"
-        :inputs="editInputs"
-        :buttons="[
-        { text: 'Cancelar', role: 'cancel', handler: closeEditAlert },
-        { text: 'Salver', handler: salvarEdicao }
-        ]" >
-    </ion-alert>
+    <!-- Mensagem caso a lista esteja vazia -->
+    <IonItem v-else>
+      <IonLabel class="ion-text-center">Nenhum contato encontrado.</IonLabel>
+    </IonItem>
+  </IonList>
 
-    <ion-alert 
-    :is-open="deleteAlert.open"
-    header="Excluir contato"
-    message="Tem certeza que deseja excluir este contato?"
-    :buttons="[
-        { text: 'Cancelar', role: 'cancel', handler: closeDeleteAlert },
-        { text: 'Excluir', role: 'destructive', handler: excluirContato }
+  <!-- Alerta de Edição -->
+    <!-- Alerta de Edição Corrigido -->
+  <IonAlert
+    :is-open="editAlert.open"
+    header="Editar Contato"
+    :message="editAlert.error"
+    :inputs="[
+      { name: 'nome', type: 'text', placeholder: 'Nome', value: editAlert.data.nome },
+      { name: 'email', type: 'text', placeholder: 'Email', value: editAlert.data.email },
+      { name: 'telefone', type: 'tel', placeholder: 'Telefone', value: editAlert.data.telefone }
     ]"
-    />
-    </template>
+    :buttons="[
+      { text: 'Cancelar', role: 'cancel', handler: () => editAlert.open = false },
+      { text: 'Salvar', handler: salvarEdicao }
+    ]"
+  />
 
-    <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
-import { IonAlert, IonItem, IonItemOptions, IonItemOption, IonItemSliding, IonLabel, IonList } from '@ionic/vue'
-import { listContatos, updateContato, deleteContatoById } from '@/services/database'
 
-const contatos = ref<any[]>([])
-const editAlert = ref({ open: false, error: '', data: { id: null as number | null, nome: '', email: '', telefone: '' } })
-const deleteAlert = ref({ open: false, contatoId: null as number | null })
+  <!-- Alerta de Exclusão -->
+  <IonAlert
+    :is-open="deleteAlert.open"
+    header="Excluir"
+    message="Deseja excluir este contato?"
+    :buttons="[
+      { text: 'Não', role: 'cancel', handler: () => deleteAlert.open = false },
+      { text: 'Sim', role: 'destructive', handler: excluir }
+    ]"
+  />
+</template>
 
-const editInputs = computed (() => [
- { name: 'nome', type: 'text', placeholder: 'Nome', value: editAlert.value.data.nome },
- { name: 'email', type: 'email', placeholder: 'Email', value: editAlert.value.data.email },
- { name: 'telefone', type: 'tel', placeholder: 'Telefone', value: editAlert.value.data.telefone } 
-])
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { 
+  IonList, IonItem, IonLabel, IonItemSliding, 
+  IonItemOption, IonItemOptions, IonAlert 
+} from '@ionic/vue';
+import { listContatos, updateContato, deleteContatoById } from '@/services/database';
 
-async function load() {
-    contatos.value = await listContatos()
+// Estado da lista e alertas
+const contatos = ref<any[]>([]);
+const editAlert = ref({ open: false, error: '', data: {} as any });
+const deleteAlert = ref({ open: false, id: null as any });
+
+// Função para carregar os dados
+async function carregarDados() {
+  try {
+    const res = await listContatos();
+    contatos.value = res || [];
+  } catch (err) {
+    console.error("Erro ao carregar contatos:", err);
+  }
 }
 
-function handleContatoSalvo() {
-    load()
+// Abre o alerta de edição e fecha o sliding
+function abrirEdicao(contato: any, event: any) {
+  event.target.closest('ion-item-sliding')?.close();
+  editAlert.value = { open: true, error: '', data: { ...contato } };
 }
 
-function editarContato(contato:any) {
-    editAlert.value = {
-        open: true,
-        error: '',
-        data: {
-            id: contato.id,
-            nome: contato.nome,
-            email: contato.email,
-            telefone: contato.telefone,
-        },
-    }
-}
-
-function confrimarExcliusao(contato: any) {
-        deleteAlert.value = { open: true, contatoId: contato.id}
-}
-
-function closeEditAlert() {
-editAlert.value.open = false
-editAlert.value.error = ''
-}
-
-function closeDeleteAlert() {
-    deleteAlert.value.open = false
-}
-
+// Salva a edição
 async function salvarEdicao(values: any) {
-if (!editAlert.value.data.id) {
-    return
+  const id = editAlert.value.data.id;
+  // Se o campo vier vazio no alerta, mantemos o que já estava no banco
+  const nome = values.nome?.trim() || editAlert.value.data.nome;
+  const email = values.email?.trim() || editAlert.value.data.email;
+  const telefone = values.telefone || editAlert.value.data.telefone;
+
+  if (!nome || !email) {
+    editAlert.value.error = "Nome e Email são obrigatórios.";
+    return false; // Não fecha o alerta
+  }
+
+  try {
+    await updateContato(id, nome, email, telefone);
+    editAlert.value.open = false;
+    await carregarDados();
+    return true;
+  } catch (err) {
+    console.error("Erro ao atualizar:", err);
+    editAlert.value.error = "Erro ao salvar no banco.";
+    return false;
+  }
 }
 
-const nome = values?.nome ?? editAlert.value.data.nome
-const email = values?.email ?? editAlert.value.data.email
-const telefone = values?.telefone ?? editAlert.value.data.telefone
-
-
-if (!nome || !email) {
-editAlert.value.error = 'Nome e email são obrigatórios.'
-return false
+// Lógica de exclusão
+function confirmarExclusao(contato: any, event: any) {
+  event.target.closest('ion-item-sliding')?.close();
+  deleteAlert.value = { open: true, id: contato.id };
 }
 
-editAlert.value.error = ''
-await updateContato(editAlert.value.data.telefone, nome, email, telefone)
-closeEditAlert()
-load()
-return true
+async function excluir() {
+  if (deleteAlert.value.id) {
+    await deleteContatoById(deleteAlert.value.id);
+    deleteAlert.value.open = false;
+    carregarDados();
+  }
 }
 
-async function excluirContato() {
-    if (!deleteAlert.value.contatoId) {
-        return
-    }
+// Ciclo de vida e eventos
+onMounted(() => {
+  carregarDados();
+  window.addEventListener('contato-salvo', carregarDados);
+});
 
-  await deleteContatoById(deleteAlert.value.contatoId)
-  closeDeleteAlert()
-  load()
-
-  onMounted(() =>{
-load()
-window.addEventListener('contato-salvo', handleContatoSalvo)
-  })
-
-  onBeforeUnmount(() => {
-window.removeEventListener('contato-salvo', handleContatoSalvo)
-  })
-}
+onBeforeUnmount(() => {
+  window.removeEventListener('contato-salvo', carregarDados);
+});
 </script>
