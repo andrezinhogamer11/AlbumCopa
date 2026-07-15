@@ -40,12 +40,13 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonContent, useIonRouter, alertController } from '@ionic/vue';
+import { IonPage, IonContent, alertController } from '@ionic/vue';
+import { useRouter } from 'vue-router';
 import LoginForm from '@/components/LoginForm.vue';
 import { useAuth } from '@/composables/useAuth';
 
-const { login } = useAuth( );
-const router = useIonRouter();
+const { login } = useAuth();
+const router = useRouter();
 
 const handleLogin = async (email: string, pass: string) => {
   if (!email || !pass) {

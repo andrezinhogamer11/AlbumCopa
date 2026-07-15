@@ -8,13 +8,14 @@
       <ion-segment-button value="all"><ion-label>TODAS</ion-label></ion-segment-button>
       <ion-segment-button value="collected"><ion-label>COLETADAS</ion-label></ion-segment-button>
       <ion-segment-button value="pending"><ion-label>FALTANDO</ion-label></ion-segment-button>
+      <ion-segment-button value="favorites"><ion-label>FAVORITAS</ion-label></ion-segment-button>
     </ion-segment>
 
     <ion-grid>
       <ion-row>
         <!-- Mudamos para size="4" para caber 3 figurinhas por linha no celular -->
         <ion-col size="4" size-md="3" size-lg="2" v-for="s in filteredStickers" :key="s.id">
-          <StickerCard :sticker="s" @toggle-collected="toggleCollected" />
+          <StickerCard :sticker="s" @toggle-collected="toggleCollected" @toggle-favorite="toggleFavorite" />
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -27,7 +28,7 @@ import { onMounted } from 'vue';
 import StickerCard from './StickerCard.vue';
 import { useAlbum } from '@/composables/useAlbum';
 
-const { filterStatus, filteredStickers, loadAlbum, toggleCollected, setSearchTerm, setFilterStatus } = useAlbum();
+const { filterStatus, filteredStickers, loadAlbum, toggleCollected, toggleFavorite, setSearchTerm, setFilterStatus } = useAlbum();
 
 const handleSearch = (ev: any) => setSearchTerm(ev.detail.value || '');
 const handleFilter = (ev: any) => setFilterStatus(ev.detail.value);

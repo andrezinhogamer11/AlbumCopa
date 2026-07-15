@@ -14,3 +14,4 @@ import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonMenuButton, 
 import { personCircleOutline } from 'ionicons/icons';
 defineProps<{ title: string }>();
 </script>
+

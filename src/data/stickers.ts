@@ -4,6 +4,7 @@ export interface Sticker {
   team: string;
   image: string;
   collected: boolean;
+  favorite?: boolean;
   rarity?: 'Comum' | 'Rara' | 'Lendária'; // Adicionado para conquistas
   isShiny?: boolean; // Adicionado para conquistas
 }

@@ -6,6 +6,7 @@ import schema from './schema.sql?raw'
 const dbName = 'appdata'
 let db: SQLiteDBConnection | null = null
 let initialized = false
+let initializationPromise: Promise<void> | null = null
 let webStoreInitialized = false
 const sqliteConnection = new SQLiteConnection(CapacitorSQLite)
 
@@ -73,6 +74,8 @@ async function openDatabase() {
 }
 
 async function seedDatabase(database: SQLiteDBConnection) {
+  await ensureStickerFavoriteColumn(database)
+
   await database.run(
     `INSERT OR IGNORE INTO usuario (id, nome, email, senha) VALUES (1, ?, ?, ?);`,
     ['Admin', 'admin@teste.com', '123'],
@@ -88,9 +91,9 @@ async function seedDatabase(database: SQLiteDBConnection) {
 
   for (const sticker of stickers) {
     await database.run(
-      `INSERT OR IGNORE INTO stickers (id, name, team, image, rarity, is_shiny, collected)
-       VALUES (?, ?, ?, ?, ?, ?, ?);`,
-      [sticker.id, sticker.name, sticker.team, sticker.image, sticker.rarity || 'Comum', sticker.isShiny ? 1 : 0, sticker.collected ? 1 : 0],
+      `INSERT OR IGNORE INTO stickers (id, name, team, image, rarity, is_shiny, collected, favorite)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
+      [sticker.id, sticker.name, sticker.team, sticker.image, sticker.rarity || 'Comum', sticker.isShiny ? 1 : 0, sticker.collected ? 1 : 0, sticker.favorite ? 1 : 0],
     )
     await database.run(
       `UPDATE stickers
@@ -115,15 +118,80 @@ async function seedDatabase(database: SQLiteDBConnection) {
   await persistWebStore()
 }
 
+async function ensureStickerFavoriteColumn(database: SQLiteDBConnection) {
+  try {
+    await database.query('SELECT favorite FROM stickers LIMIT 1;')
+    return
+  } catch {
+    // A coluna ainda nao existe em bancos criados antes do recurso de favoritos.
+  }
+
+  try {
+    await database.run('ALTER TABLE stickers ADD COLUMN favorite INTEGER NOT NULL DEFAULT 0;')
+  } catch {
+    await database.query('SELECT favorite FROM stickers LIMIT 1;')
+  }
+}
+
+async function ensureStickersTableReady(database: SQLiteDBConnection) {
+  const tableResult = await database.query(
+    `SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'stickers';`,
+  )
+
+  if ((tableResult.values || []).length > 0) {
+    await ensureStickerFavoriteColumn(database)
+    return
+  }
+
+  await database.run(
+    `CREATE TABLE stickers (
+      id INTEGER PRIMARY KEY,
+      name TEXT,
+      team TEXT NOT NULL,
+      image TEXT NOT NULL,
+      rarity TEXT NOT NULL,
+      is_shiny INTEGER NOT NULL DEFAULT 0,
+      collected INTEGER NOT NULL DEFAULT 0,
+      favorite INTEGER NOT NULL DEFAULT 0
+    );`,
+  )
+}
+
+async function ensureSchema(database: SQLiteDBConnection) {
+  try {
+    await database.execute(schema)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : JSON.stringify(error)
+    if (!message.toLowerCase().includes('duplicate column')) {
+      throw error
+    }
+  }
+
+  await ensureStickersTableReady(database)
+}
+
 async function ensureDatabase() {
   if (initialized && db) {
     return
   }
 
-  const database = await openDatabase()
-  await database.execute(schema)
-  await seedDatabase(database)
-  initialized = true
+  if (initializationPromise) {
+    await initializationPromise
+    return
+  }
+
+  initializationPromise = (async () => {
+    const database = await openDatabase()
+    await ensureSchema(database)
+    await seedDatabase(database)
+    initialized = true
+  })()
+
+  try {
+    await initializationPromise
+  } finally {
+    initializationPromise = null
+  }
 }
 
 function getDb() {
@@ -208,6 +276,12 @@ export async function updateStickerCollected(id: number, collected: boolean, use
   await ensureDatabase()
   await getDb().run('UPDATE stickers SET collected = ? WHERE id = ?;', [collected ? 1 : 0, id])
   await recalculateAchievements(userId)
+  await persistWebStore()
+}
+
+export async function updateStickerFavorite(id: number, favorite: boolean) {
+  await ensureDatabase()
+  await getDb().run('UPDATE stickers SET favorite = ? WHERE id = ?;', [favorite ? 1 : 0, id])
   await persistWebStore()
 }
 

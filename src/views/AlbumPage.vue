@@ -25,6 +25,31 @@
         </div>
       </div>
 
+      <ion-card class="ranking-card">
+        <ion-card-header>
+          <div class="ranking-header">
+            <div>
+              <ion-card-subtitle>Ranking de Colecionador</ion-card-subtitle>
+              <ion-card-title>{{ collectorRanking.totalScore }} pontos</ion-card-title>
+            </div>
+            <ion-badge :color="collectorRanking.levelColor">{{ collectorRanking.levelName }}</ion-badge>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="ranking-progress-info">
+            <span>Nivel atual</span>
+            <strong>{{ collectorRanking.levelName }}</strong>
+          </div>
+          <ion-progress-bar :value="collectorRanking.progress"></ion-progress-bar>
+          <p class="next-level-text" v-if="collectorRanking.nextLevel">
+            Faltam <strong>{{ collectorRanking.pointsToNextLevel }}</strong> pontos para {{ collectorRanking.nextLevel }}.
+          </p>
+          <p class="next-level-text" v-else>
+            Nivel maximo alcancado.
+          </p>
+        </ion-card-content>
+      </ion-card>
+
       <StickerList />
     </ion-content>
   </ion-page>
@@ -32,13 +57,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import { IonPage, IonContent, IonFab, IonFabButton, IonIcon } from '@ionic/vue';
+import { IonPage, IonContent, IonFab, IonFabButton, IonIcon, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonBadge, IonProgressBar } from '@ionic/vue';
 import { volumeHighOutline, volumeMuteOutline } from 'ionicons/icons';
 import AppHeader from '@/components/AppHeader.vue';
 import StickerList from '@/components/StickerList.vue';
 import { useAlbum } from '@/composables/useAlbum';
 
-const { albumSummary } = useAlbum();
+const { albumSummary, collectorRanking } = useAlbum();
 
 // LÓGICA DE ÁUDIO
 const audio = new Audio('/assets/audio/musica.mp3'); // Caminho do seu arquivo
@@ -108,4 +133,47 @@ onUnmounted(() => {
 .stats-row { display: flex; justify-content: space-between; align-items: center; }
 .stats-row p { font-size: 0.85rem; margin: 0; opacity: 0.95; }
 .stats-row strong { font-size: 1rem; color: var(--ion-color-primary); }
+
+.ranking-card {
+  margin: 12px 12px 16px;
+  border-radius: 8px;
+}
+
+.ranking-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ranking-header ion-card-title {
+  margin-top: 6px;
+  font-size: 1.6rem;
+  font-weight: 900;
+}
+
+.ranking-header ion-badge {
+  flex: 0 0 auto;
+  margin-top: 4px;
+  padding: 8px 10px;
+  font-size: 0.78rem;
+}
+
+.ranking-progress-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 0.86rem;
+}
+
+.ranking-progress-info strong {
+  color: var(--ion-color-primary);
+}
+
+.next-level-text {
+  margin: 10px 0 0;
+  color: var(--ion-color-medium);
+  font-size: 0.85rem;
+}
 </style>

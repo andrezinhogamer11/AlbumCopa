@@ -3,6 +3,9 @@
     <div class="sticker-body" :class="cardClass">
       <!-- Bordinha branca clássica da figurinha -->
       <div class="sticker-content">
+        <button class="favorite-button" :class="{ active: sticker.favorite }" type="button" @click.stop="onToggleFavorite" :aria-label="favoriteLabel">
+          <ion-icon :icon="sticker.favorite ? star : starOutline"></ion-icon>
+        </button>
         <div class="image-box">
           <ion-img :src="sticker.image" class="player-photo"></ion-img>
           <div class="team-tag">{{ sticker.team }}</div>
@@ -25,10 +28,12 @@
 <script setup lang="ts">
 import { IonImg, IonIcon } from '@ionic/vue';
 import { computed } from 'vue';
-import { checkmarkCircle, sparkles } from 'ionicons/icons';
+import { checkmarkCircle, sparkles, star, starOutline } from 'ionicons/icons';
 const props = defineProps<{ sticker: any }>();
-const emit = defineEmits(['toggle-collected']);
+const emit = defineEmits(['toggle-collected', 'toggle-favorite']);
 const onToggle = () => emit('toggle-collected', props.sticker.id);
+const onToggleFavorite = () => emit('toggle-favorite', props.sticker.id);
+const favoriteLabel = computed(() => props.sticker.favorite ? 'Remover dos favoritos' : 'Marcar como favorita');
 const rarityText = computed(() => props.sticker.isShiny ? 'Brilhante' : props.sticker.rarity || 'Comum');
 const rarityClass = computed(() => ({
   common: props.sticker.rarity === 'Comum' && !props.sticker.isShiny,
@@ -83,6 +88,33 @@ const cardClass = computed(() => ({
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+}
+
+.favorite-button {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  z-index: 12;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: #6b7280;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+.favorite-button.active {
+  color: #f2b705;
+}
+
+.favorite-button ion-icon {
+  font-size: 1.05rem;
 }
 
 .image-box {

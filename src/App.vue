@@ -9,7 +9,9 @@ import { onMounted } from 'vue'
 import { initDatabase } from './services/database'
 import { IonApp, IonRouterOutlet } from '@ionic/vue';
 
-onMounted(async () => {
-  await initDatabase()
+onMounted(() => {
+  initDatabase().catch((error) => {
+    console.error('Erro ao iniciar DB', error)
+  })
 })
 </script>

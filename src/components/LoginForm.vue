@@ -1,40 +1,42 @@
 <template>
   <div class="login-form-container">
     <ion-list lines="none">
-      <ion-item class="custom-input">
-        <ion-input 
-          label="E-mail" 
-          label-placement="floating" 
-          type="email" 
-          v-model="email"
-          @ionInput="email = String($event.detail.value || '')" 
-          placeholder="exemplo@email.com"
-        ></ion-input>
-      </ion-item>
-      
-      <ion-item class="custom-input">
-        <ion-input 
-          label="Senha" 
-          label-placement="floating" 
-          type="password" 
-          v-model="password"
-          @ionInput="password = String($event.detail.value || '')" 
-          placeholder="••••••••"
-        ></ion-input>
-      </ion-item>
+      <form @submit.prevent="onLogin">
+        <ion-item class="custom-input">
+          <ion-input
+            label="E-mail"
+            label-placement="floating"
+            type="email"
+            :value="email"
+            @ionInput="email = String($event.detail.value || '')"
+            placeholder="exemplo@email.com"
+          ></ion-input>
+        </ion-item>
 
-      <div class="forgot-password">
-        <router-link to="/reset-password">Esqueceu a senha?</router-link>
-      </div>
+        <ion-item class="custom-input">
+          <ion-input
+            label="Senha"
+            label-placement="floating"
+            type="password"
+            :value="password"
+            @ionInput="password = String($event.detail.value || '')"
+            placeholder="••••••••"
+          ></ion-input>
+        </ion-item>
 
-      <!-- BOTÃO ATUALIZADO COM A COR PRIMÁRIA (VERMELHA) -->
-      <ion-button expand="block" class="login-button" type="button" @click="onLogin">
-        Entrar no Álbum
-      </ion-button>
+        <div class="forgot-password">
+          <router-link to="/reset-password">Esqueceu a senha?</router-link>
+        </div>
 
-      <div class="register-link">
-        <p>Ainda não tem álbum? <router-link to="/register">Começar agora</router-link></p>
-      </div>
+        <!-- BOTÃO ATUALIZADO COM A COR PRIMÁRIA (VERMELHA) -->
+        <ion-button expand="block" class="login-button" type="submit">
+          Entrar no Álbum
+        </ion-button>
+
+        <div class="register-link">
+          <p>Ainda não tem álbum? <router-link to="/register">Começar agora</router-link></p>
+        </div>
+      </form>
     </ion-list>
   </div>
 </template>
